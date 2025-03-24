@@ -510,3 +510,28 @@ print(perms)  # [(1,2,3), (1,3,2), (2,1,3), ...]
 combs = list(itertools.combinations([1, 2, 3], 2))
 print(combs)  # [(1,2), (1,3), (2,3)]
 ```
+
+## 集合运算Set
+
+python的Set提供的基本的集合运算
+
+```python
+# 集合可以用花括号初始化, 但是空括号不是集合, 而是字典
+# 如果要创建空集, 只能用set()
+set1 = {1, 2, 3, 4} 
+set2 = {3, 4, 5, 6}
+
+intersection_result = set1 & set2 # 交集1
+intersection_result = set1.intersection(set2) # 交集2
+
+union_result = set1 | set2 # 并集1
+union_result = set1.union(set2) # 并集2
+
+difference_result = set1 - set2 # 差集1
+difference_result = set1.difference(set2) # 差集2
+
+symmetric_difference_result = set1 ^ set2 # 对称差集1
+symmetric_difference_result = set1.symmetric_difference(set2) # 对称差集1
+
+```
+

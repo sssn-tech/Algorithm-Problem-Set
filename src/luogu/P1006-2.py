@@ -7,7 +7,7 @@ for _ in range(n):
     field.append(row)
 
 dp = [[[[0 for _ in range(m)] for _ in range(n)] for _ in range(m)] for _ in range(n)]
-# x1, y1是下面的线, x2, y2是上面的线
+# x1, y1是下面的线, x2, 
 for x1 in range(n):
     for y1 in range(m):
         for x2 in range(x1):

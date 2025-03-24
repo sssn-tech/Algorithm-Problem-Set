@@ -4,3 +4,4 @@
 cases
 
 *.bin
+.DS_STORE
