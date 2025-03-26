@@ -59,6 +59,18 @@
 >
 > 同样的, 可以**枚举右, 维护左**来优化
 
+## 哈希表
+
+#### [Leetcode2829-k-avoiding 数组的最小和](https://leetcode.cn/problems/determine-the-minimum-sum-of-a-k-avoiding-array/description/)
+
+> 和"两数之和"一摸一样, 双倍经验
+>
+> 不知道给个n<=50的数据范围是闹哪样, 搞得我以为是搜索, 其实没啥关系
+
+#### [Leetcode560-和为K的子数组](https://leetcode.cn/problems/subarray-sum-equals-k/description/)
+
+> 参见前缀和中的本题
+
 ## 差分数组
 
 没太在竞赛里见过
@@ -254,3 +266,12 @@ Leetcode与互联网面试非常爱出各种滑动窗口
 > 当然, 直接从哈夫曼树的角度想直接就有了
 >
 > 如何构造哈夫曼树? 弄一个小根堆, 每次取出两个合并, 再塞进去
+
+## 综合题
+
+#### [Acwing5722-十滴水 | 第33次CSP T4](https://www.acwing.com/problem/content/5725/)
+
+`链表`, `离散化`, `排序`, `DFS`
+
+> 不标记死亡节点的话, DFS会重复处理哦
+

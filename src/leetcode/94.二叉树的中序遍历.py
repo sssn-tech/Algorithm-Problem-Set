@@ -11,6 +11,8 @@
 #         self.val = val
 #         self.left = left
 #         self.right = right
+
+# type: ignore
 class Solution:
     def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
         ans = []
