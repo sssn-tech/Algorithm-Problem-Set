@@ -1,12 +1,6 @@
-# python算法板子与技巧总结
-
-
-
-# 算法模板
+# 基础算法
 
 ## 快速排序
-
-### 非原地快排
 
 非原地快速排序的优点是特别好写, 但是空间复杂度$O(NlogN)$到$O(N^2)$
 
@@ -23,12 +17,23 @@ def quick_sort(nums: List[int]) -> List[int]:
     return quick_sort(left) + mid + quick_sort(right)
 ```
 
-### 原地快排
+## 快速选择
 
 ```python
+def q_select(arr: List[int], k: int) -> int:
+    # 返回arr中第k小的数
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    
+    if k <= len(left): # 第k小数在左边
+        return q_select(left, k)
+    elif k <= len(left) + len(middle): # 第k小数在中间
+        return  pivot
+    else: # 第k小数在右边
+        return q_select(right, k - len(left) - len(middle))
 ```
-
-
 
 ## 归并排序
 
@@ -55,6 +60,38 @@ def merge_sort(nums: List[int], l: int, r: int) -> None:
     else:
         temp.extend(nums[i:mid])
     nums[l:r] = temp
+```
+
+## 归并排序求逆序对数量
+
+```python
+def merge_sort(arr: List[int], l: int, r: int) -> int:
+    # 统计[l, r)的逆序对数量
+    # 逆序对数量 = 左半部分内部的 + 右半部分内部的 + 跨越左右的
+    if r - l <= 1:
+        return 0
+    mid = (l + r) // 2
+    left_cnt = merge_sort(arr, l, mid)
+    right_cnt = merge_sort(arr, mid, r)
+    cross_cnt = 0
+    
+    i, j = l, mid
+    temp = []
+    while i < mid and j < r:
+        if arr[i] <= arr[j]:
+            temp.append(arr[i])
+            i += 1
+        else:
+            temp.append(arr[j])
+            j += 1
+            cross_cnt += mid - i
+    if i >= mid:
+        temp.extend(arr[j:r])
+    else:
+        temp.extend(arr[i:mid])
+    arr[l:r] = temp
+    
+    return left_cnt + right_cnt + cross_cnt
 ```
 
 ## 字符串编辑距离
@@ -87,6 +124,8 @@ def edit_distance(s1: str, s2: str) -> int:
     return dp[n][m]
 ```
 
+# 数论算法
+
 ## 快速幂
 
 ```python
@@ -104,7 +143,7 @@ def quick_pow(a: int, b: int, MOD: int) -> int:
 ## 辗转相除法
 
 ```python
-def gcd(a, b):
+def gcd(a: int, b: int) -> int:
     while b:
         a, b = b, a % b
     return a
@@ -127,7 +166,7 @@ def phi(x: int) -> int:
     return res
 ```
 
-## 欧拉筛素数
+## 线性筛素数
 
 ```python
 def get_primes(n: int) -> List[int]:
@@ -147,6 +186,216 @@ def get_primes(n: int) -> List[int]:
                 break
     return primes
 ```
+
+## 筛法求欧拉函数
+
+```python
+def get_phis(n: int) -> List[int]:
+    # 将n以内(包含)的欧拉函数以列表返回
+    phi = [0] * (n + 1)
+    for i in range(n + 1):
+        phi[i] = i
+    for i in range(2, n + 1):
+        if phi[i] == i:  # i 是质数
+            for j in range(i, n + 1, i):
+                phi[j] -= phi[j] // i
+    return phi
+```
+
+## 四种组合数求法: $C_n^k$
+
+### 普通求法
+
+```python
+# C(n, k) = n! / k!(n-k)!
+def C(n: int, k: int) -> int:
+    res = 1
+    b, c = 1, 1
+    for i in range(n, 0, -1):
+        res *= i
+        if i <= k:
+            res //= i 
+        if i <= n-k:
+            res //= i
+    return res
+```
+
+### DP出所有查询
+
+$$C_n^k = C_{n-1}^k + C_{n-1}^{k-1}$$
+
+#### 记忆化
+
+```python
+mem = {}  # 用字典记忆化
+mod = int(1e9+7)
+def combination(n: int, k: int):
+    # 返回C(n, k), n选k
+    token = (n, k)
+    if token in mem:
+        return mem[token]
+    # 处理无效情况
+    if k < 0 or n < k or n < 0:
+        res = 0
+    elif k == 0 or n == k:
+        res = 1
+    else: # C(n, k) = C(n-1, k) + C(n-1, k-1)
+        res = (combination(n-1, k) + combination(n-1, k-1)) % mod
+    mem[token] = res % mod
+    return res % mod
+```
+
+#### 递推
+
+```python
+n_max = 2000
+mod = int(1e9+7)
+c = [[0 for _ in range (n_max + 1)] for _ in range(n_max + 1) ]  
+
+# 递推建表
+# c(n, k) = c(n-1, k) + c(n-1, k-1)
+for i in range(0, n_max + 1):
+    c[i][0] = c[i][i] = 1
+    for j in range(1, i):
+        c[i][j] = (c[i-1][j] + c[i-1][j-1]) % mod
+```
+
+### 预处理阶乘和阶乘逆元(要求p为质数)
+
+```python
+def quick_pow(a: int, b: int, p: int) -> int:
+    # 快速幂返回a**b % p
+    res = 1
+    while b != 0:
+        if b & 1:
+            res = (res * a) % p
+        a = (a * a) % p 
+        b >>= 1
+    return res 
+
+n_max = int(1e5)
+mod = int(1e9+7)
+fact = [0 for _ in range(n_max+1)]
+fact_inv = [0 for _ in range(n_max+1)]
+
+fact[0] = fact_inv[0] = 1
+for i in range(1, n_max + 1):
+    fact[i] = (i * fact[i - 1]) % mod 
+    fact_inv[i] = (fact_inv[i - 1] * quick_pow(i, mod-2, mod)) % mod
+
+def combination(n: int, k: int) -> int:
+    # C(n, k) = n! / k!(n-k)!
+    return ((fact[n] * fact_inv[k]) % mod * fact_inv[n-k]) % mod
+```
+
+### Lucas定理(p为质数, n, k过大无法预处理)
+
+```python
+def qmi(a, k, p):
+    res  = 1
+    while k:
+        if k & 1:
+            res = res * a % p
+        a = a * a % p
+        k >>= 1
+    return res
+
+def C(n,k,p):
+    res = 1
+    j = n
+    for i in range(1, k+1):
+        res = res * j % p
+        res = res * qmi(i, p-2, p) % p
+        j-=1
+    return res
+
+def lucas(n,k,p):
+    if n < p and k < p: return C(n,k,p)
+    return C(n%p, k%p, p) * lucas(n//p , k//p, p) % p
+```
+
+## 扩展欧几里德算法
+
+```python
+def extended_gcd(a, b):
+    """
+    扩展欧几里得算法
+    返回 gcd, x, y 使得 ax + by = gcd(a, b)
+    """
+    if b == 0:
+        return a, 1, 0
+    else:
+        gcd, x1, y1 = extended_gcd(b, a % b)
+        x = y1
+        y = x1 - (a // b) * y1
+        return gcd, x, y
+```
+
+## 扩展欧求乘法逆元
+
+```python
+# 上面的扩展欧不变
+def mod_inverse(a, m):
+    """
+    计算 a 在模 m 意义下的逆元
+    返回 x，使得 a * x ≡ 1 (mod m)
+    如果逆元不存在（即 gcd(a, m) ≠ 1），返回 None
+    """
+    gcd, x, _ = extended_gcd(a, m)
+    if gcd != 1:
+        return None  # 不存在逆元
+    else:
+        return x % m  # 保证结果为正数
+```
+
+## 高斯消元求线性方程组
+
+```python
+def gaussian_elimination(matrix: List[float]):
+    # matrix是n行n+1列的线性方程组
+    # 返回解的情况, 如果有唯一解, 返回具体的解
+    import copy
+
+    EPS = 1e-8
+    n = len(matrix)
+    m = len(matrix[0]) - 1  # number of variables
+    mat = copy.deepcopy(matrix)
+
+    rank = 0
+    where = [-1] * m
+
+    for col in range(m):
+        sel = rank
+        for i in range(rank, n):
+            if abs(mat[i][col]) > abs(mat[sel][col]):
+                sel = i
+        if abs(mat[sel][col]) < EPS:
+            continue
+        mat[rank], mat[sel] = mat[sel], mat[rank]
+        where[col] = rank
+        # Eliminate column
+        for i in range(n):
+            if i != rank and abs(mat[i][col]) > EPS:
+                factor = mat[i][col] / mat[rank][col]
+                for j in range(col, m + 1):
+                    mat[i][j] -= factor * mat[rank][j]
+        rank += 1
+
+    for i in range(rank, n):
+        if abs(mat[i][-1]) > EPS:
+            return "No solution"
+    if rank < m:
+        return "Infinite group solutions"
+
+    # Unique solution
+    ans = [0] * m
+    for i in range(m):
+        if where[i] != -1:
+            ans[i] = mat[where[i]][-1] / mat[where[i]][i]
+    return ans
+```
+
+# 图论算法
 
 ## Dijkstra: 单源最短路首选
 
@@ -299,6 +548,102 @@ def primMST(graph: List[List[Tuple[int, int]]], n: int) -> int:
     return MSTlen if len(MSTnodes) == n else INF
 ```
 
+## 最近公共祖先(LCA)
+
+### Tarjan求最近公共祖先
+
+```python
+def tarjan_lca(adj_list: List[List[int]], root: int, queries: List[Tuple[int, int]]) -> List[int]:
+    """
+    adj_list: 树的临接表, 以无向图形式存储
+    root: 树根, queries: 元组列表, 每个元素(u, v)代表一次查询
+    """
+    parent = {}
+    ancestor = {}
+    visited = set()
+    uf_parent = {}
+    result = {}
+    # 初始化查询映射
+    query_map = defaultdict(list)
+    for idx, (u, v) in enumerate(queries):
+        query_map[u].append((v, idx))
+        query_map[v].append((u, idx))
+
+    def find(u):
+        if uf_parent[u] != u:
+            uf_parent[u] = find(uf_parent[u])
+        return uf_parent[u]
+      
+    def union(u, v):
+        uf_parent[find(u)] = find(v)
+        
+    def dfs(u, parent_node):
+        uf_parent[u] = u
+        ancestor[u] = u
+        for v in adj_list[u]:
+            if v == parent_node:
+                continue  # 跳过父节点
+            if v not in visited:
+                dfs(v, u)  # 传递当前节点作为父节点参数
+                union(v, u)
+                ancestor[find(u)] = u
+        visited.add(u)
+        for v, idx in query_map[u]:
+            if v in visited:
+                result[idx] = ancestor[find(v)]
+
+    dfs(root, None)  # 根节点的父节点设为None
+
+    # 返回结果列表
+    return [result[i] for i in range(len(queries))]
+```
+
+### 倍增法求LCA
+
+```python
+def bin_lifting_lca(adj_list: List[List[int]], root: int, queries: List[Tuple[int, int]]) -> List[int]:
+    n = len(adj_list)
+    LOG = math.ceil(math.log2(n)) + 1  # 最大倍增层数, math.ceil是向上取整
+    parent = [[-1] * LOG for _ in range(n)]  # parent[node][k] 表示 node 的 2^k 级祖先
+    depth = [0] * n
+    visited = [False] * n
+
+    def dfs(u: int, p: int):
+        visited[u] = True
+        parent[u][0] = p
+        for v in adj_list[u]:
+            if not visited[v]:
+                depth[v] = depth[u] + 1
+                dfs(v, u)
+
+    # Step 1: DFS 初始化 parent[0] 和 depth
+    dfs(root, -1)
+    # Step 2: 预处理所有 2^k 级祖先
+    for k in range(1, LOG):
+        for v in range(n):
+            if parent[v][k - 1] != -1:
+                parent[v][k] = parent[parent[v][k - 1]][k - 1]
+                
+    def get_lca(u: int, v: int) -> int:
+        if depth[u] < depth[v]:
+            u, v = v, u
+        # Step 3: 将 u 提升到和 v 同一深度
+        for k in reversed(range(LOG)):
+            if parent[u][k] != -1 and depth[parent[u][k]] >= depth[v]:
+                u = parent[u][k]
+        if u == v:
+            return u
+        # Step 4: 同时向上跳，直到找到 LCA
+        for k in reversed(range(LOG)):
+            if parent[u][k] != -1 and parent[u][k] != parent[v][k]:
+                u = parent[u][k]
+                v = parent[v][k]
+        return parent[u][0]
+
+    # Step 5: 处理所有查询
+    return [get_lca(u, v) for u, v in queries]
+```
+
 ## 染色法判断二分图
 
 ```python
@@ -354,6 +699,10 @@ def hungarian_match_count(graph: List[List[int]], n1: int, n2: int) -> int:
 
 # 常用工具总结
 
+## python读入优化sys.read()
+
+
+
 ## 时间逃课工具datetime
 
 ```python
@@ -378,7 +727,6 @@ t2 = t2 - timedelta(seconds=200)
 
 # 日期可以修改任意成员变量
 t2 = t2.replace(year=1999, day=1)
-
 ```
 
 ## 自定义排序规则
@@ -543,10 +891,8 @@ print(combs)  # [(1,2), (1,3), (2,3)]
 
 ## 集合运算Set
 
-python的Set提供的基本的集合运算
-
 ```python
-# 集合可以用花括号初始化, 但是空括号不是集合, 而是字典
+# 集合可以用花括号初始化, 但是空花括号不是集合, 而是字典
 # 如果要创建空集, 只能用set()
 set1 = {1, 2, 3, 4} 
 set2 = {3, 4, 5, 6}
@@ -563,5 +909,45 @@ difference_result = set1.difference(set2) # 差集2
 symmetric_difference_result = set1 ^ set2 # 对称差集1
 symmetric_difference_result = set1.symmetric_difference(set2) # 对称差集1
 
+```
+
+## 类型检查: isinstance()与type()
+
+```python
+x = 10
+print(isinstance(x, int))  # True
+print(isinstance(x, float))  # False
+print(type(x) == int)        # True
+
+# isinstance() 会考虑继承关系, 而type()不会
+```
+
+## python的格式化输出
+
+### .format方法(python3)
+
+```python
+print("My name is {0}, and I am {1} years old.".format(name, age))
+print("My name is {n}, and I am {a} years old.".format(n=name, a=age))
+pi = 3.14159
+print("Pi is {:.2f}".format(pi))  # 输出 Pi is 3.14
+```
+
+### f-string方法(python3.6+), 最方便
+
+```python
+name = "Charlie"
+age = 28
+print(f"My name is {name}, and I am {age} years old.")
+pi = 3.14159
+print(f"Pi rounded to 2 decimals: {pi:.2f}")
+```
+
+### 对齐
+
+```python
+print(f"{'Python':^10}")  # 居中
+print(f"{'Python':<10}")  # 左对齐
+print(f"{'Python':>10}")  # 右对齐
 ```
 

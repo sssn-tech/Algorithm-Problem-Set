@@ -1,77 +1,48 @@
+class Solution:
+    def maxActiveSectionsAfterTrade(self, s: str) -> int:
+        # 答案是最长的0区块(容忍中间有一段1)的长度
+        import bisect
+        if len(s) == 1:
+            return int(s[0])
+        
+        s = '1' + s + '1'
+        n = len(s)
+        prefix_sums = []
+        for ch in s:
+            prefix_sums.append(int(ch) + (prefix_sums[-1] if prefix_sums else 0))
+        # print(prefix_sums)
+        if prefix_sums[-1] == 2:
+            return 0
+        
+        lo = 0
+        ans = 0
+        while lo < n:
+            lo_r = lo
+            while lo_r + 1 < n and s[lo_r + 1] != '0':
+                lo_r += 1
+            val = prefix_sums[lo_r]
+            hi = bisect.bisect_left(prefix_sums, val + 2)
+            if hi < n and hi - lo_r > 3:
+                while hi < n and s[hi] == '1':
+                    hi += 1
+                hi -= 1
+                if hi - lo > ans:
+                    minus = 0
+                    if lo == 0 and hi == n - 1:
+                        minus += 1
+                    if hi - lo - minus > ans:
+                        print('can do', lo, hi)
+                        ans = hi - lo - minus
+            lo += 1
+            while lo < n and s[lo] == '0':
+                lo += 1
 
-from typing import *
-from collections import *
-from datetime import *
-from functools import *
-import heapq
-import bisect
-
-from typing import List, Tuple
-import math
-
-def bin_lifting_lca(adj_list: List[List[int]], root: int, queries: List[Tuple[int, int]]) -> List[int]:
-    n = len(adj_list)
-    LOG = math.ceil(math.log2(n)) + 1  # 最大倍增层数
-
-    parent = [[-1] * LOG for _ in range(n)]  # parent[node][k] 表示 node 的 2^k 级祖先
-    depth = [0] * n
-    visited = [False] * n
-
-    def dfs(u: int, p: int):
-        visited[u] = True
-        parent[u][0] = p
-        for v in adj_list[u]:
-            if not visited[v]:
-                depth[v] = depth[u] + 1
-                dfs(v, u)
-
-    # Step 1: DFS 初始化 parent[0] 和 depth
-    dfs(root, -1)
-
-    # Step 2: 预处理所有 2^k 级祖先
-    for k in range(1, LOG):
-        for v in range(n):
-            if parent[v][k - 1] != -1:
-                parent[v][k] = parent[parent[v][k - 1]][k - 1]
-
-    def get_lca(u: int, v: int) -> int:
-        if depth[u] < depth[v]:
-            u, v = v, u
-
-        # Step 3: 将 u 提升到和 v 同一深度
-        for k in reversed(range(LOG)):
-            if parent[u][k] != -1 and depth[parent[u][k]] >= depth[v]:
-                u = parent[u][k]
-
-        if u == v:
-            return u
-
-        # Step 4: 同时向上跳，直到找到 LCA
-        for k in reversed(range(LOG)):
-            if parent[u][k] != -1 and parent[u][k] != parent[v][k]:
-                u = parent[u][k]
-                v = parent[v][k]
-
-        return parent[u][0]
-
-    # Step 5: 处理所有查询
-    return [get_lca(u, v) for u, v in queries]
-
-n, m, s = map(int, input().split())
-
-graph = [[] for _ in range(n + 1)]
-for _ in range(n - 1):
-    u, v = map(int, input().split())
-    graph[u].append(v)
-    graph[v].append(u)
-
-queries = []
-for _ in range(m):
-    u, v = map(int, input().split())
-    queries.append((u, v))
-
-ans = bin_lifting_lca(graph, s, queries)
-for u in ans:
-    print(u)
-    
-
+            lo = 1
+            n -= 1
+            if ans == 0: 
+                return prefix_sums[-2] - 1
+             
+        return ans
+            
+            
+print(Solution().maxActiveSectionsAfterTrade('01'))
