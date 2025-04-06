@@ -1,6 +1,7 @@
-.cph
-.vscode
-
+# 忽略所有.开头的文件夹
+.*/
+# 但不忽略.git
+!.git/
 cases
 
 *.bin
