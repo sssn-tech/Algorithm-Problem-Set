@@ -28,6 +28,8 @@
 >
 > 然后思考双指针撞车时候的处理, 三种情况讨论一下, 讨论完发现lo<=hi是一样的
 
+#### [Lanqiao19715-回文数组 | 2024年Python省赛 A组 T4](https://www.lanqiao.cn/problems/19715/learning/)
+
 ## 前缀和
 
 蓝桥杯最爱考的题型之一, 板子很简单, 但是考法可以比较巧妙
@@ -93,7 +95,7 @@
 
 #### [Leetcode560-和为K的子数组](https://leetcode.cn/problems/subarray-sum-equals-k/description/)
 
-> 参见前缀和中的本题
+> 参见[前缀和中的本题](##前缀和)
 
 ## 差分数组
 
@@ -137,6 +139,56 @@ Leetcode与互联网面试非常爱出各种滑动窗口
 > 依次枚举每个数, 他只可能被append到一个递增子序列后, 或者一个递减子序列后
 >
 > 用LIS的NlogN做法那个数组来维护所有的系统处理的导弹序列
+
+## 二分
+
+二分检索经常和排序一起出
+
+**二分答案的明显关键词是求最大值最小, 或者最小值最大**
+
+### 最小化最大值
+
+#### Leetcode2439-最小化数组中的最大值
+
+#### Leetcode2513-最小化两个数组中的最大值
+
+#### Leetcode2616-最小化数对的最大差值
+
+### 最大化最小值
+
+#### Leetcode1552-两球之间的磁力
+
+#### Leetcode2517-礼盒的最大甜蜜度
+
+#### Leetcode2528-最大化城市的最小供电站树木
+
+### 二分答案
+
+#### Leetcode875-爱吃香蕉的珂珂
+
+#### Leetcode876-使结果不超过阈值的最小除数
+
+#### Leetcode877-完成旅途的最少时间
+
+#### Leetcode878-每个小孩最多能分到多少糖果
+
+#### Leetcode879-准时到达的列车最小时速
+
+#### Leetcode880-在 D 天内送达包裹的能力
+
+#### Leetcode881-分配给商店的最多商品的最小值
+
+#### Leetcode882-袋子里最少数目的球
+
+#### Leetcode883-制作 m 束花所需的最少天数
+
+#### Leetcode884-可以到达的最远建筑
+
+#### Leetcode885-可移除字符的最大数目
+
+#### Leetcode886-水位上升的泳池中游泳
+
+#### Leetcode887-逃离火灾
 
 ## 动态规划
 
@@ -228,6 +280,40 @@ Leetcode与互联网面试非常爱出各种滑动窗口
 #### [Acwing187-导弹拦截系统](https://www.acwing.com/problem/content/189/)
 
 > 参见 搜索-Acwing187-导弹拦截系统
+
+#### [Leetcode368-最大整除子集](https://leetcode.cn/problems/largest-divisible-subset/)
+
+给你一个数组nums, 请你求出最大的子集, 满足任意两个元素整除
+
+> 如果你将nums排序, 那问题就变成了求最长整除子序列(相邻元素左是右的因数)
+>
+> 天才吧, 这提醒我们见到对位置不敏感的序列, 排序是一定要考虑到的
+>
+> 第二个考点是记录子序列的元素内容, 可以用一个`prev[]`数组记录上一个位置, 完成求解长度后递归求出序列
+
+#### [Leetcode198-打家劫舍](https://leetcode.cn/problems/house-robber/description/)
+
+#### [Leetcode213-打家劫舍II](https://leetcode.cn/problems/house-robber-ii/description/)
+
+有一排房子, 每个房子有价值, 你是一个小偷, 不能偷相邻的房子, 问最大偷到多少价值
+
+> 经典线性dp题, 选择偷与不偷来转移状态
+>
+> 如果是环形, 分类讨论起始节点就可以
+
+#### [Leetcode213-打家劫舍IV](https://leetcode.cn/problems/house-robber-iv/description/)
+
+有一排房子, 每个房子有价值, 你是一个小偷, 不能偷相邻的房子, 这个月你有了KPI, 至少要偷k栋房子
+
+你害怕被抓, 为了避免引起注意, 要偷的所有房子里, 最高的价值尽可能低
+
+问给定KPI下, 最低的最高价值是多少
+
+> 挂着打家劫舍的牌子, 考的是二分答案
+>
+> 看到最大值最小, 最小值最大, 就要往二分答案想, 这一点很重要
+>
+> 当然, 检查答案合法的时候, 用到了前面的DP
 
 ### 字符串编辑DP
 
@@ -402,6 +488,30 @@ Leetcode与互联网面试非常爱出各种滑动窗口
 >
 > 除了需要注意k的范围, 还需要观察样例, 注意最后一次合并
 
+### 树形DP
+
+#### [Leetcode543-二叉树的直径](https://leetcode.cn/problems/diameter-of-binary-tree/description/)
+
+求二叉树的直径, 直径定义为树上最远距离
+
+> 以当前节点为拐点的最长距离(直径候选)为左右深度之和
+
+#### [Leetcode687-最长同值路径](https://leetcode.cn/problems/longest-univalue-path/description/)
+
+求二叉树中, 最长的节点值相同的路径
+
+> 改为左右“同值”深度
+
+#### [Leetcode337-打家劫舍III](https://leetcode.cn/problems/house-robber-iii/description/)
+
+给你一棵树, 每个节点代表一个房子, 房子有价值
+
+你可以抢劫一些房子, 但必须保证抢劫的房子不相邻, 问最大收益是多少
+
+> 如果抢当前节点, 则收益 = 当前+左不抢+右不抢
+>
+> 如果不抢当前节点, 则收益=max(左抢, 左不抢)+max(右抢, 右不抢)
+
 ## 记忆化搜索
 
 记忆化搜索和动态规划一直坐一桌吃饭的
@@ -430,6 +540,19 @@ Leetcode与互联网面试非常爱出各种滑动窗口
 >
 > 当然也可以线性DP
 
+#### [Leetcode416-分割等和子集](https://leetcode.cn/problems/partition-equal-subset-sum/)
+
+给你一个nums数组, 里面都是正整数, 问他能否分割成两个等和的子集
+
+> 任意一个数, 都有选和不选两种
+>
+> 如果选, 在后面找target-nums[p], 如果不选, 后面找target
+>
+> 剪枝: 
+>
+> 1. 跳过太多值返回False 
+> 2. 2. 找到一个True终止所有搜索
+
 ## 并查集
 
 ### 带权并查集
@@ -455,6 +578,22 @@ Leetcode与互联网面试非常爱出各种滑动窗口
 ### 找规律
 
 蓝桥杯真的很喜欢考找规律, 基本上在第四题这个位置
+
+#### [Lanqiao19700-召唤数学精灵 | 2024年Python省赛 A组 T2](https://www.lanqiao.cn/problems/19700/learning/)
+
+求闭区间[1, 2024041331404202]中有多少个$i$ 满足($\sum$ - $\prod$ ) % 100 == 0
+
+> 把前1000个满足条件的i打印出来
+
+#### [Lanqiao19714-数字诗意 | 2024年Python省赛 A组 T3](https://www.lanqiao.cn/problems/19714/learning/)
+
+如果一个正整数可以由连续正整数累加(至少2个), 他是富含诗意的, 如果不能表达则是没有诗意的
+
+给你一个数组, 你需要让所有元素都含诗意, 问至少删除几个元素
+
+> 打印出前1000个没有诗意的数
+>
+> Tips: 判断一个数是否是2的幂次: n & (n - 1) == 0
 
 
 
