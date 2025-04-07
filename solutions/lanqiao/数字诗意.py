@@ -32,5 +32,3 @@ for num in nums:
     if  num in pow2:
         ans += 1
 print(ans)
-
-
